@@ -13,11 +13,17 @@ developmentChains.includes(network.name)
               fundMe = await ethers.getContract("FundMe", deployer)
           })
           it("allows people to fund and withdraw", async function () {
-              await fundMe.fund({ value: sendValue })
+              const response = await fundMe.fund({ value: sendValue })
+              let balance = await fundMe.provider.getBalance(fundMe.address)
+              console.log(`contract balance after fund: ${balance.toString()}`)
+              await response.wait(1)
+              balance = await fundMe.provider.getBalance(fundMe.address)
+              console.log(`contract balance after wait: ${balance.toString()}`)
               await fundMe.withdraw()
-              const endingFundMeBalance = await fundMe.provider.getBalance(
-                  fundMe.address
+              balance = await fundMe.provider.getBalance(fundMe.address)
+              console.log(
+                  `contract balance after withdraw: ${balance.toString()}`
               )
-              assert.equal(endingFundMeBalance, 0)
+              assert.equal(balance.toString(), 0)
           })
       })
